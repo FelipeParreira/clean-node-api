@@ -1,19 +1,35 @@
+import { AccountModel } from '../../domain/models/account'
+import { AddAccount, AddAccountModel } from '../../domain/usecases/add-account'
 import { InvalidParamError, MissingParamError, ServerError } from '../errors'
 import { EmailValidator } from '../protocols'
 import { SignUpController } from './signup'
 
-const makeSut = (): { sut: SignUpController, emailValidatorStub: EmailValidator } => {
-  class EmailValidatorStub implements EmailValidator {
-    isValid (email: string): boolean {
-      return true
+class EmailValidatorStub implements EmailValidator {
+  isValid (email: string): boolean {
+    return true
+  }
+}
+
+class AddAccountStub implements AddAccount {
+  add (account: AddAccountModel): AccountModel {
+    return {
+      id: 'valid-id',
+      name: 'a name',
+      email: 'email@mail.com',
+      password: '123abc'
     }
   }
+}
+
+const makeSut = (): { sut: SignUpController, emailValidatorStub: EmailValidator, addAccountStub: AddAccount } => {
   const emailValidatorStub = new EmailValidatorStub()
-  const sut = new SignUpController(emailValidatorStub)
+  const addAccountStub = new AddAccountStub()
+  const sut = new SignUpController(emailValidatorStub, addAccountStub)
 
   return {
     sut,
-    emailValidatorStub
+    emailValidatorStub,
+    addAccountStub
   }
 }
 
@@ -142,5 +158,28 @@ describe('SignUp Controller', () => {
     const httpResponse = sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('should call addAccount with the correct values', () => {
+    const { sut, addAccountStub } = makeSut()
+    const addSpy = jest.spyOn(addAccountStub, 'add')
+
+    const httpRequest = {
+      body: {
+        name: 'any name',
+        email: 'my@email.com',
+        password: '123abc',
+        passwordConfirmation: '123abc'
+      }
+    }
+
+    sut.handle(httpRequest)
+
+    expect(addSpy).toBeCalledTimes(1)
+    expect(addSpy).toBeCalledWith({
+      name: 'any name',
+      email: 'my@email.com',
+      password: '123abc'
+    })
   })
 })
