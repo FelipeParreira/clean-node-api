@@ -1,3 +1,4 @@
+import { Encrypter } from '../../protocols/encrypter'
 import { DbAddAccount } from './db-add-account-copy'
 
 class EncrypterStub {
@@ -6,10 +7,19 @@ class EncrypterStub {
   }
 }
 
+const makeSut = (): { sut: DbAddAccount, encrypterStub: Encrypter } => {
+  const encrypterStub = new EncrypterStub()
+  const sut = new DbAddAccount(encrypterStub)
+
+  return {
+    sut,
+    encrypterStub
+  }
+}
+
 describe('DbAddAccount Usecase', () => {
   test('should call Encrypter with the correct password', async () => {
-    const encrypterStub = new EncrypterStub()
-    const sut = new DbAddAccount(encrypterStub)
+    const { sut, encrypterStub } = makeSut()
     const encryptSpy = jest.spyOn(encrypterStub, 'encrypt')
     await sut.add({
       name: 'a name',
