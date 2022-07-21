@@ -26,7 +26,7 @@ describe('Account Mongo Repository', () => {
       email: 'email@mail.com',
       password: 'pwd'
     }
-    const account = await sut.add(Object.freeze(accountData))
+    const account = await sut.add(accountData)
 
     expect(account).toBeTruthy()
     expect(account).toEqual({
