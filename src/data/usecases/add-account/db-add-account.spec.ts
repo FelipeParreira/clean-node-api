@@ -1,22 +1,38 @@
-import { Encrypter } from './db-add-account-protocols'
+import { Encrypter, AccountModel, AddAccountModel, AddAccountRepository } from './db-add-account-protocols'
 import { DbAddAccount } from './db-add-account'
 
 class EncrypterStub implements Encrypter {
   async encrypt (pwd: string): Promise<string> {
-    return await Promise.resolve('hashed pwd')
+    return await Promise.resolve('hashed-pwd')
+  }
+}
+
+class AddAccountRepositoryStub implements AddAccountRepository {
+  async add (account: AddAccountModel): Promise<AccountModel> {
+    return await Promise.resolve({
+      ...account,
+      password: 'hashed-pwd',
+      id: 'real-id'
+    })
   }
 }
 
 const makeEncrypter = (): EncrypterStub => {
   return new EncrypterStub()
 }
-const makeSut = (): { sut: DbAddAccount, encrypterStub: Encrypter } => {
+
+const makeAddAccountRepository = (): AddAccountRepository => {
+  return new AddAccountRepositoryStub()
+}
+const makeSut = (): { sut: DbAddAccount, encrypterStub: Encrypter, addAccountRepositoryStub: AddAccountRepository } => {
   const encrypterStub = makeEncrypter()
-  const sut = new DbAddAccount(encrypterStub)
+  const addAccountRepositoryStub = makeAddAccountRepository()
+  const sut = new DbAddAccount(encrypterStub, addAccountRepositoryStub)
 
   return {
     sut,
-    encrypterStub
+    encrypterStub,
+    addAccountRepositoryStub
   }
 }
 
@@ -43,5 +59,22 @@ describe('DbAddAccount Usecase', () => {
       email: 'my email'
     }
     return await expect(sut.add(accountData)).rejects.toThrow(new Error('some error'))
+  })
+
+  test('should call AddAccountRepository with the correct values', async () => {
+    const { sut, addAccountRepositoryStub } = makeSut()
+    const addSpy = jest.spyOn(addAccountRepositoryStub, 'add')
+    const accountData = {
+      name: 'a name',
+      password: '123abc',
+      email: 'my email'
+    }
+    await sut.add(accountData)
+
+    expect(addSpy).toHaveBeenCalledTimes(1)
+    expect(addSpy).toHaveBeenCalledWith({
+      ...accountData,
+      password: 'hashed-pwd'
+    })
   })
 })
