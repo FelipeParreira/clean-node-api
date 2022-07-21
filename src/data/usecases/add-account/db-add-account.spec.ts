@@ -89,4 +89,24 @@ describe('DbAddAccount Usecase', () => {
     }
     return await expect(sut.add(accountData)).rejects.toThrow(new Error('some error'))
   })
+
+  test('should return an account on success', async () => {
+    const { sut } = makeSut()
+
+    const accountData = {
+      name: 'a name',
+      password: '123abc',
+      email: 'my email'
+    }
+    const account = await sut.add(accountData)
+
+    expect(account).toMatchInlineSnapshot(`
+      Object {
+        "email": "my email",
+        "id": "real-id",
+        "name": "a name",
+        "password": "hashed-pwd",
+      }
+    `)
+  })
 })
