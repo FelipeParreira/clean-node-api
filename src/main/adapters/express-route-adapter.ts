@@ -7,9 +7,15 @@ export const adaptRoute = (controller: Controller) => {
       body: req.body
     }
     void controller.handle(httpRequest).then((httpResponse) => {
-      res
-        .status(httpResponse.statusCode)
-        .json(httpResponse.body)
+      if (httpResponse.statusCode === 200) {
+        res
+          .status(httpResponse.statusCode)
+          .json(httpResponse.body)
+      } else {
+        res
+          .status(httpResponse.statusCode)
+          .json({ error: httpResponse.body.message })
+      }
     })
   }
 }
