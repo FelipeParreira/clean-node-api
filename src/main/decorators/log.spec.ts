@@ -1,9 +1,9 @@
 import { Controller, HttpRequest, HttpResponse } from '../../presentation/protocols'
 import { LogControllerDecorator } from './log'
 
+const httpResponse: HttpResponse = { body: { name: 'someone' }, statusCode: 200 }
 class ControllerStub implements Controller {
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
-    const httpResponse: HttpResponse = { body: { name: 'someone' }, statusCode: 200 }
     return await Promise.resolve(httpResponse)
   }
 }
@@ -32,5 +32,13 @@ describe('LogControllerDecorator', () => {
 
     expect(handleSpy).toHaveBeenCalledTimes(1)
     expect(handleSpy).toHaveBeenCalledWith(httpRequest)
+  })
+
+  test('should return the http response returned by the controller\'s handle', async () => {
+    const { sut } = makeSut()
+    const httpRequest = { body: {} }
+    const response = await sut.handle(httpRequest)
+
+    expect(response).toBe(httpResponse)
   })
 })
