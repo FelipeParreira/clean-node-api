@@ -24,6 +24,7 @@ const makeEncrypter = (): EncrypterStub => {
 const makeAddAccountRepository = (): AddAccountRepository => {
   return new AddAccountRepositoryStub()
 }
+
 const makeSut = (): { sut: DbAddAccount, encrypterStub: Encrypter, addAccountRepositoryStub: AddAccountRepository } => {
   const encrypterStub = makeEncrypter()
   const addAccountRepositoryStub = makeAddAccountRepository()
@@ -36,15 +37,17 @@ const makeSut = (): { sut: DbAddAccount, encrypterStub: Encrypter, addAccountRep
   }
 }
 
+const accountData = {
+  name: 'a name',
+  password: '123abc',
+  email: 'my email'
+}
+
 describe('DbAddAccount Usecase', () => {
   test('should call Encrypter with the correct password', async () => {
     const { sut, encrypterStub } = makeSut()
     const encryptSpy = jest.spyOn(encrypterStub, 'encrypt')
-    await sut.add({
-      name: 'a name',
-      password: '123abc',
-      email: 'my email'
-    })
+    await sut.add(accountData)
 
     expect(encryptSpy).toHaveBeenCalledWith('123abc')
   })
@@ -53,22 +56,12 @@ describe('DbAddAccount Usecase', () => {
     const { sut, encrypterStub } = makeSut()
     jest.spyOn(encrypterStub, 'encrypt').mockRejectedValueOnce(new Error('some error'))
 
-    const accountData = {
-      name: 'a name',
-      password: '123abc',
-      email: 'my email'
-    }
     return await expect(sut.add(accountData)).rejects.toThrow(new Error('some error'))
   })
 
   test('should call AddAccountRepository with the correct values', async () => {
     const { sut, addAccountRepositoryStub } = makeSut()
     const addSpy = jest.spyOn(addAccountRepositoryStub, 'add')
-    const accountData = {
-      name: 'a name',
-      password: '123abc',
-      email: 'my email'
-    }
     await sut.add(accountData)
 
     expect(addSpy).toHaveBeenCalledTimes(1)
@@ -82,22 +75,11 @@ describe('DbAddAccount Usecase', () => {
     const { sut, addAccountRepositoryStub } = makeSut()
     jest.spyOn(addAccountRepositoryStub, 'add').mockRejectedValueOnce(new Error('some error'))
 
-    const accountData = {
-      name: 'a name',
-      password: '123abc',
-      email: 'my email'
-    }
     return await expect(sut.add(accountData)).rejects.toThrow(new Error('some error'))
   })
 
   test('should return an account on success', async () => {
     const { sut } = makeSut()
-
-    const accountData = {
-      name: 'a name',
-      password: '123abc',
-      email: 'my email'
-    }
     const account = await sut.add(accountData)
 
     expect(account).toMatchInlineSnapshot(`
