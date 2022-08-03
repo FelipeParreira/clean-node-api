@@ -11,7 +11,7 @@ class ControllerStub implements Controller {
 }
 
 class LogErrorRepositoryStub implements LogErrorRepository {
-  async log (stack: string): Promise<void> {}
+  async logError (stack: string): Promise<void> {}
 }
 
 const makeErrorRepository = (): LogErrorRepository => {
@@ -66,7 +66,7 @@ describe('LogControllerDecorator', () => {
     const httpRequest = makeHttpRequest()
     const serverError = makeFakeServerError()
     jest.spyOn(controllerStub, 'handle').mockResolvedValueOnce(serverError)
-    const logSpy = jest.spyOn(logErrorRepositoryStub, 'log')
+    const logSpy = jest.spyOn(logErrorRepositoryStub, 'logError')
 
     await sut.handle(httpRequest)
 
