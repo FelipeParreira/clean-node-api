@@ -1,5 +1,3 @@
-import { AccountModel } from '../../../../domain/models/account'
-import { AddAccount, AddAccountModel } from '../../../../domain/usecases/add-account'
 import { MongoHelper } from '../helpers/mongo-helper'
 import { LogErrorRepository } from '../../../../data/protocols/log-error-repository'
 
