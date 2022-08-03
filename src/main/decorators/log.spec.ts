@@ -8,10 +8,17 @@ class ControllerStub implements Controller {
   }
 }
 
+const makeSut = (): { sut: LogControllerDecorator, controllerStub: Controller} => {
+  const controllerStub = new ControllerStub()
+  const sut = new LogControllerDecorator(controllerStub)
+  return {
+    sut, controllerStub
+  }
+}
+
 describe('LogControllerDecorator', () => {
   test('should call controller\'s handle', async () => {
-    const controllerStub = new ControllerStub()
-    const sut = new LogControllerDecorator(controllerStub)
+    const { sut, controllerStub } = makeSut()
     const httpRequest = {
       body: {
         email: 'email@me.com',
