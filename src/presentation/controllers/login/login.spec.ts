@@ -1,5 +1,5 @@
 import { MissingParamError } from '../../errors'
-import { badRequest, serverError, unauthorized } from '../../helpers/http-helper'
+import { badRequest, ok, serverError, unauthorized } from '../../helpers/http-helper'
 import { LoginController } from './login'
 import { HttpRequest, EmailValidator, Authentication } from './login-protocols'
 import { InvalidParamError } from '../../errors/invalid-param-error'
@@ -14,9 +14,10 @@ const makeEmailValidator = (): EmailValidator => {
   return new EmailValidatorStub()
 }
 
+const token = 'token'
 class AuthenticationStub implements Authentication {
   async auth (email: string, password: string): Promise<string | null> {
-    return 'token'
+    return token
   }
 }
 
@@ -120,5 +121,14 @@ describe('Login Controller', () => {
     const httpResponse = await sut.handle(httpRequest)
 
     expect(httpResponse).toEqual(serverError(error))
+  })
+
+  test('should return 200 if valid credentials are provided', async () => {
+    const { sut } = makeSut()
+    const httpRequest = makeHttpRequest()
+
+    const httpResponse = await sut.handle(httpRequest)
+
+    expect(httpResponse).toEqual(ok({ accessToken: token }))
   })
 })
