@@ -18,6 +18,7 @@ export class LoginController implements Controller {
     }
 
     if (!this.emailValidator.isValid(email)) {
+      return badRequest(new InvalidParamError('email'))
     }
 
     return badRequest(new MissingParamError(''))
