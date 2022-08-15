@@ -1,6 +1,6 @@
 import { MissingParamError } from '../../errors'
 import { ValidationComposite } from './validation-composite'
-import { Validation } from './validation'
+import { Validation } from '../../protocols/validation'
 
 class ValidationStub implements Validation {
   validate (input: any): Error | undefined {
