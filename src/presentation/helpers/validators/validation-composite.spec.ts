@@ -36,4 +36,12 @@ describe('Validation Composite', () => {
 
     expect(error).toEqual(new Error())
   })
+
+  test('should return undefined if validation succeeds', () => {
+    const { sut } = makeSut()
+
+    const response = sut.validate({ field: 'value' })
+
+    expect(response).not.toBeDefined()
+  })
 })
