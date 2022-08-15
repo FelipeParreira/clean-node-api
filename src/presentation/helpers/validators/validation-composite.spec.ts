@@ -8,20 +8,32 @@ class ValidationStub implements Validation {
   }
 }
 
-const makeSut = (): { sut: ValidationComposite, validationStub: Validation} => {
-  const validationStub = new ValidationStub()
-  const sut = new ValidationComposite([validationStub])
+const makeSut = (): { sut: ValidationComposite, validationStubs: Validation[]} => {
+  const validationStubs = [new ValidationStub(), new ValidationStub()]
+  const sut = new ValidationComposite(validationStubs)
 
-  return { sut, validationStub }
+  return { sut, validationStubs }
 }
 
 describe('Validation Composite', () => {
-  test('should return the error returned by the fisrt validation that fails', () => {
-    const { sut, validationStub } = makeSut()
+  test('should return an error any validation fails', () => {
+    const { sut, validationStubs } = makeSut()
     const validationError = new MissingParamError('field')
-    jest.spyOn(validationStub, 'validate').mockReturnValueOnce(validationError)
+    jest.spyOn(validationStubs[1], 'validate').mockReturnValueOnce(validationError)
+
     const error = sut.validate({ field: 'value' })
 
     expect(error).toEqual(validationError)
+  })
+
+  test('should return the error returned by the fisrt validation that fails', () => {
+    const { sut, validationStubs } = makeSut()
+    jest.spyOn(validationStubs[0], 'validate').mockReturnValueOnce(new Error())
+    const validationError = new MissingParamError('field')
+    jest.spyOn(validationStubs[1], 'validate').mockReturnValueOnce(validationError)
+
+    const error = sut.validate({ field: 'value' })
+
+    expect(error).toEqual(new Error())
   })
 })
