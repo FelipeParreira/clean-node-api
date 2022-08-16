@@ -3,6 +3,7 @@ import { AccountModel } from '../add-account/db-add-account-protocols'
 import { DbAuthentication } from './db-authentication'
 import { AuthenticationModel } from '../../../domain/usecases/authentication'
 import { HashComparer } from '../../protocols/cryptography/hash-comparer'
+import { TokenGenerator } from '../../protocols/cryptography/token-generator'
 
 const makeAccount = (): AccountModel => ({
   id: 'an id',
@@ -28,15 +29,23 @@ class HashComparerStub implements HashComparer {
   }
 }
 
-const makeSut = (): { sut: DbAuthentication, loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository, hashComparerStub: HashComparer } => {
+class TokenGeneratorStub implements TokenGenerator {
+  async generate (id: string): Promise<string> {
+    return 'a token'
+  }
+}
+
+const makeSut = (): { sut: DbAuthentication, loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository, hashComparerStub: HashComparer, tokenGeneratorStub: TokenGenerator } => {
   const hashComparerStub = new HashComparerStub()
+  const tokenGeneratorStub = new TokenGeneratorStub()
   const loadAccountByEmailRepositoryStub = new LoadAccountByEmailRepositoryStub()
-  const sut = new DbAuthentication(loadAccountByEmailRepositoryStub, hashComparerStub)
+  const sut = new DbAuthentication(loadAccountByEmailRepositoryStub, hashComparerStub, tokenGeneratorStub)
 
   return {
     sut,
     loadAccountByEmailRepositoryStub,
-    hashComparerStub
+    hashComparerStub,
+    tokenGeneratorStub
   }
 }
 
@@ -95,5 +104,16 @@ describe('DbAuthentication UseCase', () => {
     const accessToken = await sut.auth(makeAuthentication())
 
     expect(accessToken).toBeNull()
+  })
+
+  test('should call TokenGenerator with the correct id', async () => {
+    const { sut, tokenGeneratorStub } = makeSut()
+    const generateSpy = jest.spyOn(tokenGeneratorStub, 'generate')
+    const authentication = makeAuthentication()
+
+    await sut.auth(authentication)
+
+    expect(generateSpy).toHaveBeenCalledTimes(1)
+    expect(generateSpy).toHaveBeenCalledWith(makeAccount().id)
   })
 })
