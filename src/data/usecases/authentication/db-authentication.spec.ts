@@ -29,9 +29,10 @@ class HashComparerStub implements HashComparer {
   }
 }
 
+const token = 'a token'
 class TokenGeneratorStub implements TokenGenerator {
   async generate (id: string): Promise<string> {
-    return 'a token'
+    return token
   }
 }
 
@@ -123,5 +124,13 @@ describe('DbAuthentication UseCase', () => {
     jest.spyOn(tokenGeneratorStub, 'generate').mockRejectedValueOnce(error)
 
     await expect(sut.auth(makeAuthentication())).rejects.toThrow(error)
+  })
+
+  test('should return the access token on success', async () => {
+    const { sut } = makeSut()
+
+    const accessToken = await sut.auth(makeAuthentication())
+
+    expect(accessToken).toBe(token)
   })
 })
