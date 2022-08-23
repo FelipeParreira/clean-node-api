@@ -1,6 +1,6 @@
+import { InvalidParamError } from '../../presentation/errors'
+import { EmailValidator } from '../protocols/email-validator'
 import { EmailValidation } from './email-validation'
-import { EmailValidator } from '../../protocols/email-validator'
-import { InvalidParamError } from '../../errors/invalid-param-error'
 
 class EmailValidatorStub implements EmailValidator {
   isValid (email: string): boolean {
