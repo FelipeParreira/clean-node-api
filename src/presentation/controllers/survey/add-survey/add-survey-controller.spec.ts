@@ -1,7 +1,7 @@
 import { HttpRequest, Validation, AddSurvey, AddSurveyModel } from './add-survey-controller-protocols'
 import { AddSurveyController } from './add-survey-controller'
 import { MissingParamError } from '../../../errors'
-import { badRequest, serverError } from '../../../helpers/http/http-helper'
+import { badRequest, noContent, serverError } from '../../../helpers/http/http-helper'
 
 class ValidationStub implements Validation {
   validate (input: any): Error | undefined {
@@ -75,5 +75,14 @@ describe('AddSurvey Controller', () => {
     const httpResponse = await sut.handle(httpRequest)
 
     expect(httpResponse).toEqual(serverError(error))
+  })
+
+  test('should return 204 on success', async () => {
+    const { sut } = makeSut()
+    const httpRequest = makeHttpRequest()
+
+    const httpResponse = await sut.handle(httpRequest)
+
+    expect(httpResponse).toEqual(noContent())
   })
 })
