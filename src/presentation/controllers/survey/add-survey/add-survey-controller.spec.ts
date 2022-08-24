@@ -1,7 +1,7 @@
 import { HttpRequest, Validation, AddSurvey, AddSurveyModel } from './add-survey-controller-protocols'
 import { AddSurveyController } from './add-survey-controller'
 import { MissingParamError } from '../../../errors'
-import { badRequest } from '../../../helpers/http/http-helper'
+import { badRequest, serverError } from '../../../helpers/http/http-helper'
 
 class ValidationStub implements Validation {
   validate (input: any): Error | undefined {
@@ -64,5 +64,16 @@ describe('AddSurvey Controller', () => {
 
     expect(addSpy).toHaveBeenCalledTimes(1)
     expect(addSpy).toHaveBeenCalledWith(httpRequest.body)
+  })
+
+  test('should return 500 if AddSurvey throws an error', async () => {
+    const { sut, addSurveyStub } = makeSut()
+    const error = new Error('some error')
+    jest.spyOn(addSurveyStub, 'add').mockRejectedValueOnce(error)
+    const httpRequest = makeHttpRequest()
+
+    const httpResponse = await sut.handle(httpRequest)
+
+    expect(httpResponse).toEqual(serverError(error))
   })
 })
