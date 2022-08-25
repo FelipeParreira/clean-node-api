@@ -13,7 +13,7 @@ const makeAccount = (): AccountModel => ({
 })
 
 class LoadAccountByTokenStub implements LoadAccountByToken {
-  async loadByToken (accessToken: string, role?: string | undefined): Promise<AccountModel> {
+  async loadByToken (accessToken: string, role?: string | undefined): Promise<AccountModel | null> {
     return makeAccount()
   }
 }
@@ -47,5 +47,15 @@ describe('Auth Middleware', () => {
 
     expect(loadSpy).toHaveBeenCalledTimes(1)
     expect(loadSpy).toHaveBeenCalledWith(httpRequest.headers['x-access-token'])
+  })
+
+  test('should return 403 if LoadAccountByToken returns null', async () => {
+    const { sut, loadAccountByTokenStub } = makeSut()
+    const httpRequest = makeHttpRequest()
+    jest.spyOn(loadAccountByTokenStub, 'loadByToken').mockResolvedValueOnce(null)
+
+    const httpResponse = await sut.handle(httpRequest)
+
+    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
   })
 })
