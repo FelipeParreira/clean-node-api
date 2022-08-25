@@ -44,7 +44,7 @@ describe('DbLoadAccountByToken Usecase', () => {
     expect(decryptSpy).toHaveBeenCalledWith(token)
   })
 
-  test('should return null if decrypter returns null', async () => {
+  test('should return null if Decrypter returns null', async () => {
     const { sut, decrypterStub } = makeSut()
     jest.spyOn(decrypterStub, 'decrypt').mockResolvedValueOnce(null)
 
@@ -70,5 +70,13 @@ describe('DbLoadAccountByToken Usecase', () => {
     const result = await sut.load(token, role)
 
     expect(result).toBeNull()
+  })
+
+  test('should return an account if LoadAccountByTokenRepository returns an account', async () => {
+    const { sut } = makeSut()
+
+    const account = await sut.load(token, role)
+
+    expect(account).toEqual(makeAccount())
   })
 })
