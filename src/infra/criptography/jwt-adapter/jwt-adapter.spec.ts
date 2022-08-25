@@ -60,5 +60,13 @@ describe('JWT Adapter', () => {
       expect(verifySpy).toHaveBeenCalledTimes(1)
       expect(verifySpy).toHaveBeenCalledWith(token, secret)
     })
+
+    test('should return a value on verify success', async () => {
+      const sut = makeSut()
+
+      const decryptedValue = await sut.decrypt(value)
+
+      expect(decryptedValue).toBe(anotherValue)
+    })
   })
 })
