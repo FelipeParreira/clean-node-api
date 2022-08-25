@@ -18,9 +18,9 @@ class LoadAccountByTokenStub implements LoadAccountByToken {
   }
 }
 
-const makeSut = (): { sut: AuthMiddleware, loadAccountByTokenStub: LoadAccountByToken } => {
+const makeSut = (role?: string): { sut: AuthMiddleware, loadAccountByTokenStub: LoadAccountByToken } => {
   const loadAccountByTokenStub = new LoadAccountByTokenStub()
-  const sut = new AuthMiddleware(loadAccountByTokenStub)
+  const sut = new AuthMiddleware(loadAccountByTokenStub, role)
   return { sut, loadAccountByTokenStub }
 }
 
@@ -39,14 +39,15 @@ describe('Auth Middleware', () => {
   })
 
   test('should call LoadAccountByToken with the correct access token', async () => {
-    const { sut, loadAccountByTokenStub } = makeSut()
+    const role = 'a role'
+    const { sut, loadAccountByTokenStub } = makeSut(role)
     const httpRequest = makeHttpRequest()
     const loadSpy = jest.spyOn(loadAccountByTokenStub, 'loadByToken')
 
     await sut.handle(httpRequest)
 
     expect(loadSpy).toHaveBeenCalledTimes(1)
-    expect(loadSpy).toHaveBeenCalledWith(httpRequest.headers['x-access-token'])
+    expect(loadSpy).toHaveBeenCalledWith(httpRequest.headers['x-access-token'], role)
   })
 
   test('should return 403 if LoadAccountByToken returns null', async () => {
