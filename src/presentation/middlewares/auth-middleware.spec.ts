@@ -25,13 +25,13 @@ const makeSut = (): { sut: AuthMiddleware, loadAccountByTokenStub: LoadAccountBy
 }
 
 const makeHttpRequest = (headers = {}): HttpRequest => ({
-  headers
+  headers: { 'x-access-token': '123abc', ...headers }
 })
 
 describe('Auth Middleware', () => {
   test('should return 403 if no x-access-token is provided in the headers', async () => {
     const { sut } = makeSut()
-    const httpRequest = makeHttpRequest()
+    const httpRequest = makeHttpRequest({ 'x-access-token': undefined })
 
     const httpResponse = await sut.handle(httpRequest)
 
@@ -40,7 +40,7 @@ describe('Auth Middleware', () => {
 
   test('should call LoadAccountByToken with the correct access token', async () => {
     const { sut, loadAccountByTokenStub } = makeSut()
-    const httpRequest = makeHttpRequest({ 'x-access-token': '123abc' })
+    const httpRequest = makeHttpRequest()
     const loadSpy = jest.spyOn(loadAccountByTokenStub, 'loadByToken')
 
     await sut.handle(httpRequest)
