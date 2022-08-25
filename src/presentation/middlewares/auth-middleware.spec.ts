@@ -11,7 +11,7 @@ const makeAccount = (): AccountModel => ({
 })
 
 class LoadAccountByTokenStub implements LoadAccountByToken {
-  async loadByToken (accessToken: string, role?: string | undefined): Promise<AccountModel | null> {
+  async load (accessToken: string, role?: string | undefined): Promise<AccountModel | null> {
     return makeAccount()
   }
 }
@@ -40,7 +40,7 @@ describe('Auth Middleware', () => {
     const role = 'a role'
     const { sut, loadAccountByTokenStub } = makeSut(role)
     const httpRequest = makeHttpRequest()
-    const loadSpy = jest.spyOn(loadAccountByTokenStub, 'loadByToken')
+    const loadSpy = jest.spyOn(loadAccountByTokenStub, 'load')
 
     await sut.handle(httpRequest)
 
@@ -51,7 +51,7 @@ describe('Auth Middleware', () => {
   test('should return 403 if LoadAccountByToken returns null', async () => {
     const { sut, loadAccountByTokenStub } = makeSut()
     const httpRequest = makeHttpRequest()
-    jest.spyOn(loadAccountByTokenStub, 'loadByToken').mockResolvedValueOnce(null)
+    jest.spyOn(loadAccountByTokenStub, 'load').mockResolvedValueOnce(null)
 
     const httpResponse = await sut.handle(httpRequest)
 
@@ -72,7 +72,7 @@ describe('Auth Middleware', () => {
     const { sut, loadAccountByTokenStub } = makeSut()
     const httpRequest = makeHttpRequest()
     const error = new Error('some error')
-    jest.spyOn(loadAccountByTokenStub, 'loadByToken').mockRejectedValueOnce(error)
+    jest.spyOn(loadAccountByTokenStub, 'load').mockRejectedValueOnce(error)
 
     const httpResponse = await sut.handle(httpRequest)
 
