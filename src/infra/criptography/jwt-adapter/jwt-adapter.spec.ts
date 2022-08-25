@@ -68,5 +68,15 @@ describe('JWT Adapter', () => {
 
       expect(decryptedValue).toBe(anotherValue)
     })
+
+    test('should throw if verify throws', async () => {
+      const sut = makeSut()
+      const error = new Error('some error')
+      jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+        throw error
+      })
+
+      await expect(sut.decrypt(value)).rejects.toThrow(error)
+    })
   })
 })
