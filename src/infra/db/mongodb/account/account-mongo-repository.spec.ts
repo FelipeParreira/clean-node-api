@@ -111,12 +111,12 @@ describe('Account Mongo Repository', () => {
       })
     })
 
-    // test('should return null if loadByToken fails', async () => {
-    //   const sut = makeSut()
+    test('should return null if loadByToken fails', async () => {
+      const sut = makeSut()
 
-    //   const account = await sut.loadByToken('a token')
+      const account = await sut.loadByToken('a token', 'a role')
 
-    //   expect(account).toBeNull()
-    // })
+      expect(account).toBeNull()
+    })
   })
 })
