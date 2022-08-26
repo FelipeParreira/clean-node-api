@@ -60,7 +60,7 @@ describe('DbLoadAccountByToken Usecase', () => {
     await sut.load(token, role)
 
     expect(loadByTokenSpy).toHaveBeenCalledTimes(1)
-    expect(loadByTokenSpy).toHaveBeenCalledWith(decryptedToken, role)
+    expect(loadByTokenSpy).toHaveBeenCalledWith(token, role)
   })
 
   test('should return null if LoadAccountByTokenRepository returns null', async () => {
