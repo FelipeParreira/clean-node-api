@@ -1,6 +1,7 @@
 import { LoadSurveysController } from './load-surveys-controller'
 import { LoadSurveys, SurveyModel } from './load-surveys-controller-protocols'
 import mockdate from 'mockdate'
+import { ok } from '../../../helpers/http/http-helper'
 
 class LoadSurveysStub implements LoadSurveys {
   async load (): Promise<SurveyModel[]> {
@@ -58,5 +59,25 @@ describe('LoadSurveys Controller', () => {
 
     expect(loadSpy).toHaveBeenCalledTimes(1)
     expect(loadSpy).toHaveBeenCalledWith()
+  })
+
+  test('should call LoadSurveys', async () => {
+    const { sut, loadSurveysStub } = makeSut()
+    const httpRequest = {}
+    const loadSpy = jest.spyOn(loadSurveysStub, 'load')
+
+    await sut.handle(httpRequest)
+
+    expect(loadSpy).toHaveBeenCalledTimes(1)
+    expect(loadSpy).toHaveBeenCalledWith()
+  })
+
+  test('should return 200 on success', async () => {
+    const { sut } = makeSut()
+    const httpRequest = {}
+
+    const httpResponse = await sut.handle(httpRequest)
+
+    expect(httpResponse).toEqual(ok(makeSurveys()))
   })
 })
