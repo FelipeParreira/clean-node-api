@@ -73,7 +73,7 @@ describe('Account Mongo Repository', () => {
 
       expect(data.accessToken).not.toBeDefined()
 
-      await sut.updateAccessToken(data._id, token)
+      await sut.updateAccessToken(data._id.toString(), token)
 
       const account = await accountCollection.findOne({ _id: data._id })
 
