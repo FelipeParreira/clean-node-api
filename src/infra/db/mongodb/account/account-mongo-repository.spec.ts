@@ -97,9 +97,9 @@ describe('Account Mongo Repository', () => {
       })
     })
 
-    test('should return an account on loadByToken with role success', async () => {
+    test('should return an account on loadByToken with admin role success', async () => {
       const sut = makeSut()
-      const data = { ...accountData, accessToken: 'a token', role: 'a role' }
+      const data = { ...accountData, accessToken: 'a token', role: 'admin' }
       await accountCollection.insertOne({ ...data })
 
       const account = await sut.loadByToken(data.accessToken, data.role)
@@ -117,6 +117,30 @@ describe('Account Mongo Repository', () => {
       const account = await sut.loadByToken('a token', 'a role')
 
       expect(account).toBeNull()
+    })
+
+    test('should return null on loadByToken with an invalid role', async () => {
+      const sut = makeSut()
+      const data = { ...accountData, accessToken: 'a token' }
+      await accountCollection.insertOne({ ...data })
+
+      const account = await sut.loadByToken(data.accessToken, 'admin')
+
+      expect(account).toBeNull()
+    })
+
+    test('should return an account on loadByToken if user is an admin', async () => {
+      const sut = makeSut()
+      const data = { ...accountData, accessToken: 'a token', role: 'admin' }
+      await accountCollection.insertOne({ ...data })
+
+      const account = await sut.loadByToken(data.accessToken)
+
+      expect(account).toBeTruthy()
+      expect(account).toEqual({
+        ...data,
+        id: expect.any(String)
+      })
     })
   })
 })
