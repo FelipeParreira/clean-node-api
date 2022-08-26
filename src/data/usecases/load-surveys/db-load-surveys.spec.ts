@@ -52,4 +52,12 @@ describe('DbLoadSurveys', () => {
     expect(loadAllSpy).toBeCalledTimes(1)
     expect(loadAllSpy).toBeCalledWith()
   })
+
+  test('should return the surveys returned by LoadSurveysRepository', async () => {
+    const { sut } = makeSut()
+
+    const surveys = await sut.load()
+
+    expect(surveys).toEqual(makeSurveys())
+  })
 })
