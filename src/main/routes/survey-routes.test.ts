@@ -96,5 +96,49 @@ describe('Survey Routes', () => {
         .get('/api/surveys')
         .expect(403)
     })
+
+    test('should return 204 if there are no surveys', async () => {
+      const account = await accountCollection.insertOne({
+        name: 'John',
+        email: 'john@mail.com',
+        password: '123abc'
+      })
+      const id = account.insertedId
+      const accessToken = jwt.sign({ id }, env.jwtSecret)
+      await accountCollection.updateOne({
+        _id: id
+      }, { $set: { accessToken } })
+
+      await request(app)
+        .get('/api/surveys')
+        .set('x-access-token', accessToken)
+        .expect(204)
+    })
+
+    test('should return 200 if there are surveys', async () => {
+      const account = await accountCollection.insertOne({
+        name: 'John',
+        email: 'john@mail.com',
+        password: '123abc'
+      })
+      const id = account.insertedId
+      const accessToken = jwt.sign({ id }, env.jwtSecret)
+      await accountCollection.updateOne({
+        _id: id
+      }, { $set: { accessToken } })
+
+      await surveyCollection.insertOne({
+        question: 'a question?',
+        answers: [
+          { answer: 'answer1', image: 'http://image.com' },
+          { answer: 'answer2' }
+        ]
+      })
+
+      await request(app)
+        .get('/api/surveys')
+        .set('x-access-token', accessToken)
+        .expect(200)
+    })
   })
 })
