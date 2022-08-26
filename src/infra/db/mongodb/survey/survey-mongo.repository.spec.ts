@@ -12,7 +12,8 @@ const makeSurveyData = (): AddSurveyModel => ({
   answers: [
     { image: 'img.svg', answer: 'an answer' },
     { answer: 'another answer' }
-  ]
+  ],
+  date: new Date()
 })
 
 let surveyCollection: Collection

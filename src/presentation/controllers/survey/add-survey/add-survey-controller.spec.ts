@@ -2,6 +2,7 @@ import { HttpRequest, Validation, AddSurvey, AddSurveyModel } from './add-survey
 import { AddSurveyController } from './add-survey-controller'
 import { MissingParamError } from '../../../errors'
 import { badRequest, noContent, serverError } from '../../../helpers/http/http-helper'
+import mockdate from 'mockdate'
 
 class ValidationStub implements Validation {
   validate (input: any): Error | undefined {
@@ -33,6 +34,12 @@ const makeHttpRequest = (): HttpRequest => ({
 })
 
 describe('AddSurvey Controller', () => {
+  beforeAll(() => {
+    mockdate.set(new Date())
+  })
+
+  afterAll(() => mockdate.reset())
+
   test('should call Validation with the correct values', async () => {
     const { sut, validationStub } = makeSut()
     const httpRequest = makeHttpRequest()
@@ -63,7 +70,7 @@ describe('AddSurvey Controller', () => {
     await sut.handle(httpRequest)
 
     expect(addSpy).toHaveBeenCalledTimes(1)
-    expect(addSpy).toHaveBeenCalledWith(httpRequest.body)
+    expect(addSpy).toHaveBeenCalledWith({ ...httpRequest.body, date: new Date() })
   })
 
   test('should return 500 if AddSurvey throws an error', async () => {
