@@ -1,6 +1,6 @@
-import { LogErrorRepository } from '../../data/protocols/db/log/log-error-repository'
-import { ok, serverError } from '../../presentation/helpers/http/http-helper'
-import { Controller, HttpRequest, HttpResponse } from '../../presentation/protocols'
+import { LogErrorRepository } from '@/data/protocols/db/log/log-error-repository'
+import { ok, serverError } from '@/presentation/helpers/http/http-helper'
+import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { LogControllerDecorator } from './log-controller-decorator'
 
 const httpResponse: HttpResponse = ok({ name: 'someone' })

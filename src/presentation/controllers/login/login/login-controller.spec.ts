@@ -1,8 +1,8 @@
-import { MissingParamError } from '../../../errors'
-import { badRequest, ok, serverError, unauthorized } from '../../../helpers/http/http-helper'
-import { LoginController } from './login-controller'
+import { MissingParamError } from '@/presentation/errors'
+import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/http/http-helper'
+import { AuthenticationModel } from '@/domain/usecases/authentication'
 import { HttpRequest, Authentication, Validation } from './login-controller-protocols'
-import { AuthenticationModel } from '../../../../domain/usecases/authentication'
+import { LoginController } from './login-controller'
 
 class ValidationStub implements Validation {
   validate (input: any): Error | undefined {

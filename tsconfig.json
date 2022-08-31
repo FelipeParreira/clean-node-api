@@ -6,14 +6,15 @@
     "esModuleInterop": true,
     "strictNullChecks": true,
     "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
     "rootDir": "src",
-    "forceConsistentCasingInFileNames": true
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"]
+    }
   },
   "include": [
     "src"
   ],
-  "exclude": [
-    "**/*.spec.ts",
-    "**/*.test.ts"
-  ]
+  "exclude": []
 }

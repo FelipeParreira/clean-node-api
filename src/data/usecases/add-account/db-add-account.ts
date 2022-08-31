@@ -12,7 +12,7 @@ export class DbAddAccount implements AddAccount {
     if (existingAccount) return null
 
     const hashedPwd = await this.hasher.hash(account.password)
-    return await this.addAccountRepository.add({
+    return this.addAccountRepository.add({
       ...account,
       password: hashedPwd
     })

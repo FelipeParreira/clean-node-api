@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken'
 import { JWTAdapter } from './jwt-adapter'
+import jwt from 'jsonwebtoken'
 
 const value = 'any id'
 const token = 'accessToken'
